@@ -150,8 +150,8 @@
 
     const varA = 0;
     const varB = "이정환";
-    const resultA = varA || varB; // ①
-    const resultB = varA ?? varB; // ②
+    const resultA = varA || varB; // 
+    const resultB = varA ?? varB; // 
     console.log(resultA); // 이정환
     console.log(resultB); // 0
     - varA는 falsy한 값, varB는 truthy한 값이기 때문에 || 연산의 결과 varB의 값인 “이정환”을 resultA에 저장.
