@@ -1,0 +1,184 @@
+[컴포넌트에 값 전달하기]
+
+1. [Props란]
+부모가 자식 컴포넌트에 단일 객체 형태로 값을 전달. 이 객체를 Props(Properties)라고 함.
+
+2. [Props로 값 전달하기]
+
+2-1. [Props로 하나의 값 전달하기]
+- App.js
+function App() {
+  const name = "이정환";
+  return (
+    <div className="App">
+      <Header />
+      <Body name={name} /> 
+      <Footer />
+    </div>
+  );
+}
+export default App;
+
+- Body.js
+function Body(props) { 
+  console.log(props); 
+  return <div className="body">{props.name}</div>; 
+}
+export default Body;
+
+2-2. [Props로 여러 개의 값 전달하기]
+- App.js
+function App() {
+  const name = "이정환";
+  return (
+    <div className="App">
+      <Header />
+      <Body name={name} location={"부천시"} /> ①
+      <Footer />
+    </div>
+  );
+}
+export default App;
+
+- Body.js
+function Body(props) {
+  console.log(props);
+  return (
+    <div className="body">
+      {props.name}은 {props.location}에 거주합니다
+    </div>
+  );
+}
+export default Body;
+
+2-3. [구조 분해 할당으로 여러 개의 값 사용하기]
+- Body.js
+function Body(props) {
+  const { name, location } = props; ①
+  console.log(name, location); ②
+  return (
+    <div className="body">
+      {name}은 {location}에 거주합니다 ③
+    </div>
+  );
+}
+export default Body;
+-더 간결한 Body.js
+function Body({ name, location }) {
+  console.log(name, location);
+  return (
+    <div className="body">
+      {name}은 {location}에 거주합니다
+    </div>
+  );
+}
+export default Body;
+
+2-4. [스프레드 연산자로 여러 개의 값 쉽게 전달하기]
+- App.js
+function App() {
+  const BodyProps = { ①
+    name: "이정환",
+    location: "부천시",
+  };
+
+  return (
+    <div className="App">
+      <Header />
+      <Body {...BodyProps} /> ②
+      <Footer />
+    </div>
+  );
+}
+export default App;
+
+2-5. [기본값 설정하기]
+-App.js
+function App() {
+  const BodyProps = {
+    name: "이정환",
+    location: "부천시",
+    favorList: ["파스타", "빵", "떡볶이"], ①
+  };
+
+  return (
+    <div className="App">
+      <Header />
+      <Body {...BodyProps} />
+      <Footer />
+    </div>
+  );
+}
+export default App;
+
+- Body.js
+function Body({ name, location, favorList }) { ①
+  console.log(name, location, favorList); ②
+  return (
+    <div className="body">
+      {name}은 {location}에 거주합니다.
+      <br />
+      {favorList.length}개의 음식을 좋아합니다. ③
+    </div> 
+  );
+}
+export default Body;
+
+-App.js
+function App() {
+  const BodyProps = {
+    name: "이정환",
+    location: "부천시",
+    // favorList: ["파스타", "빵", "떡볶이"], ①
+  };
+
+  return (
+    <div className="App">
+      <Header />
+      <Body {...BodyProps} />
+      <Footer />
+    </div>
+  );
+}
+export default App;
+
+- Body.js
+function Body({ name, location, favorList }) {
+  console.log(name, location, favorList);
+  return (
+    <div className="body">
+      {name}은 {location}에 거주합니다.
+      <br />
+      {favorList.length}개의 음식을 좋아합니다.
+    </div>
+  );
+}
+Body.defaultProps = { 
+  favorList: [],
+};
+export default Body;
+
+3. [Props로 컴포넌트 전달하기]
+- App.js
+function ChildComp() { 
+  return <div>child component</div>;
+}
+function App() {
+  return (
+    <div className="App">
+      <Header />
+      <Body>
+        <ChildComp /> 
+      </Body>
+      <Footer />
+    </div>
+  );
+}
+export default App;
+
+- Body.js
+function Body({ children }) { 
+  console.log(children); 
+  return <div className="body">{children}</div>; 
+}
+export default Body;

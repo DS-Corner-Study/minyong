@@ -1,0 +1,267 @@
+[JSX]
+
+1. [JSX란]
+리액트에서 컴포넌트는 자바스크립트 함수로 만드는데, 특이하게도 이 함수는 HTML 값을 반환.
+이렇듯 자바스크립트와 HTML 태그를 섞어 사용하는 문법을 JSX(자바스크립트 XML)라고 함.
+JSX는 자바스크립트의 확장 문법.
+JSX는 공식 자바스크립트 문법은 아님.
+그러나 JSX는 대다수 리액트 개발자가 사용하는 문법이며, 리액트 공식 문서의 예제로도 사용.
+심지어 리액트 개발팀 또한 JSX 문법의 사용을 적극 권장.
+JSX 문법을 이용하면 HTML 태그에서 자바스크립트의 표현식을 직접 사용 가능.
+
+- src/component/Body.js
+function Body() {
+  const number = 1; ①
+  return (
+    <div>
+      <h1>body</h1>
+      <h2>{number}</h2> ②
+    </div>
+  );
+}
+export default Body;
+- ① 상수 number를 선언하고 값 1을 저장.
+- ② 상수 number의 값을 <h2> 태그로 감싸 렌더링.이때 상수 number가 자바스크립트 표현식 이라는 걸 표현하기 위 해 중괄호{}를 사용.
+
+
+
+2. [JSX와 자바스크립트 표현식]
+표현식이란 값으로 평가되는 식.
+JSX는 자바스크립트 표현식을 HTML 태그와 함께 사용할 수 있어 가독성 있는 코드를 작성 가능.
+
+
+
+2-1. [산술 표현식]
+산술 표현식이란 숫자로 표현되는 식.
+
+- src/component/Body.js
+function Body() {
+  const numA = 1;
+  const numB = 2;
+  return (
+    <div>
+      <h1>body</h1>
+      <h2>{numA + numB}</h2> ①
+    </div>
+  );
+}
+export default Body;
+- ① numA + numb는 두 변수를 더한 연산식.
+- 이 연산식은 숫자로 평가되는 산술 표현식 이므로 JSX 문법과 함께 사용.
+
+
+
+2-2. [문자열 표현식]
+문자열 표현식이란 문자열 또는 문자열로 평가되는 식.
+
+- src/component/Body.js
+function Body() {
+  const strA = "안녕";
+  const strB = "리액트";
+  return (
+    <div>
+      <h1>body</h1>
+      <h2>{strA + strB}</h2> ①
+    </div>
+  );
+}
+export default Body;
+- ① strA + strB는 문자열과 문자열을 이어 붙임.
+- 문자열을 반환하는 표현식이므로 JSX 문법과 함께 사용.
+
+
+
+2-3. [논리 표현식]
+논리 표현식이란 참이나 거짓으로 평가되는 식.
+
+- src/component/Body.js
+function Body() {
+  const boolA = true;
+  const boolB = false;
+  return (
+    <div>
+      <h1>body</h1>
+      <h2>{boolA || boolB}</h2> ①
+    </div>
+  );
+}
+export default Body;
+- ① boolA || boolB는 참 또는 거짓인 불리언 값을 반환하는 표현식으로 JSX 문법과 함께 사용.
+- 논리 표현식의 결과인 불리언 값은 숫자나 문자열과 달리 페이지에 렌더링되지 않음.
+
+만일 불리언 값을 페이지에 렌더링하고 싶다면, 다음과 같이 형 변환 함수를 이용해 문자열로 바꿔 주어야 함.
+
+- src/component/Body.js
+function Body() {
+  const boolA = true;
+  const boolB = false;
+  return (
+    <div>
+      <h1>body</h1>
+      <h2>{String(boolA || boolB)}</h2> ①
+    </div>
+  );
+}
+export default Body;
+- ① String()은 숫자나 불리언 값을 문자열로 변환하는 형 변환 함수로, 자바스크립트에서 기본 으로 제공.
+
+
+
+2-4. [사용할 수 없는 값]
+JSX는 값을 반환하는 자바스크립트 표현식을 사용 가능.
+그러나 모든 값을 사용할 수 있는 것은 아님.
+원시 자료형에 해당하는 숫자, 문자열, 불리언, null, undefined를 제외한 값을 사용하면 오류가 발생.
+
+만약 객체 자료형의 값을 페이지에 렌더링하고 싶다면, 프로퍼티 접근 표기법으로 값을 원시 자료형으로 바꿔 주어야 함.
+
+- src/component/Body.js
+function Body() {
+  const objA = {
+    a: 1,
+    b: 2,
+  };
+  return (
+    <div>
+      <h1>body</h1>
+      <h2>a: {objA.a}</h2> ①
+      <h2>b: {objA.b}</h2> ②
+    </div>
+  );
+}
+export default Body;
+- ① 객체 objA의 a 프로퍼티 값 렌더링 
+- ② 객체 objA의 b 프로퍼티 값 렌더링
+
+
+
+3. [JSX 문법에서 지켜야 할 것들]
+
+
+
+3-1. [닫힘 규칙]
+SX의 모든 태그는 여는 태그가 있으면 반드시 닫는 태그도 있어야 한다는 규칙.
+
+3-2. [최상위 태그 규칙]
+JSX가 반환하는 모든 태그는 반드시 최상위 태그로 감싸야 함.
+
+HTML 태그를 최상위 태그로 사용하지 않으려면, 다음과 같이 <React.Fragment> 태그를 사용.
+
+- src/component/Body.js
+import React from "react";
+
+function Body() {
+  return (
+    <React.Fragment> ①
+      <div>div 1</div>
+      <div>div 2</div>
+    </React.Fragment>
+  );
+}
+
+export default Body;
+- ① <React.Fragment> 태그는 리액트가 제공하는 기능이면서 컴포넌트. 따라서 Body 컴포넌트에서 이 객체를 react 라이브러리에서 불러와야 함.
+
+<React.Fragment> 대신 빈 태그 ‘<></>’를 사용할 수도 있음.
+
+
+
+4. [조건부 렌더링]
+리액트 컴포넌트가 조건식의 결과에 따라 각기 다른 값을 페이지에 렌더링하는 것을 조건부 렌더링이라고 함.
+조건에 따라 페이지 요소의 모습이나 종류를 다르게 표시하고 싶을 때 조건부 렌더링을 사용.
+
+
+
+4-1. [삼항 연산자를 활용한 조건부 렌더링]
+삼항 연산자를 활용하는 JSX 문법으로 조건부 렌더링을 구현.
+
+- src/component/Body.js
+import React from "react";
+function Body() {
+  const num = 19;
+  return (
+    <>
+      <h2>
+        {num}은(는) {num % 2 === 0 ? "짝수" : "홀수"}입니다. ①
+      </h2>
+    </>
+  );
+}
+export default Body;
+- ① 삼항 연산자를 이용해 변수 num의 값이 2로 나누어 떨어지면 짝수, 그렇지 않으면 홀수를 반환.
+
+if 조건문은 표현식에 해당하지 않기 때문에 JSX와 함께 사용할 수 없지만, 표현식인 삼항 연산자를 이용하면 조건에 따라 다른 값을 렌더링 가능.
+
+
+
+4-2. [조건문을 이용한 조건부 렌더링]
+조건문은 자바스크립트의 표현식이 아니기 때문에 JSX와 함께 사용할 수 없지만, 다음과 같이 조건에 따라 컴포넌트가 반환하는 값을 다르게 표시하도록 만들 수 있음.
+
+- src/component/Body.js
+import React from "react";
+
+function Body() {
+  const num = 200;
+  if (num % 2 === 0) {
+    return <div>{num}은(는) 짝수입니다</div>;
+  } else {
+    return <div>{num}은(는) 홀수입니다</div>;
+  }
+}
+
+export default Body;
+
+
+삼항 연산자를 이용하는 방법과 조건문을 이용하는 방법은 각기 장단점 있음.
+삼항 연산자는 코드가 매우 간결하지만, 자주 사용할 경우 가독성을 해칠 우려가 있음.
+삼항 연산자는 다중 조건을 작성하기 힘듦.
+반면 조건문은 가독성은 좋으나 기본적으로 작성해야 할 코드가 많고 중복 코드가 발생할 우려도 있음.
+
+
+
+5. [JSX 스타일링]
+타일링이란 CSS와 같은 스타일 규칙을 이용해 요소의 크기, 색상 등을 결정하는 일.
+
+
+
+5-1. [인라인 스타일링]
+인라인 스타일링이란 JSX 문법으로 HTML의 style 속성을 이용해 직접 스타일을 정의하는 방법.
+
+- src/component/Body.js
+function Body() {
+  return (
+    <div style={{ backgroundColor: "red", color: "blue" }}> ①
+      <h1>body</h1>
+    </div>
+  );
+}
+export default Body;
+- ① JSX의 인라인 스타일링은 style={{스타일 규칙들}}과 같은 문법으로 작성. 문자열로 작성 하는 HTML의 인라인 스타일링과는 달리, JSX의 인라인 스타일링은 객체를 생성한 다음 각각의 스타일을 프로퍼티 형식으로 작성. 리액트의 JSX는 background-color처럼 CSS에 서 속성을 표시할 때 사용하는 스네이크 케이스 표기법 대신 backgroundColor와 같이 카멜 표기법으로 작성.
+
+인라인 스타일링은 하나의 파일 안에서 UI 표현을 위한 HTML과 스타일을 위한 CSS 규칙을 함께 작성할 수 있다는 장점이 있음.
+그러나 페이지가 스타일을 계산할 때 불필요한 연산을 수행할 가능성이 있고, 스타일 규칙이 많으면 코드가 복잡해져 가독성이 떨어짐.
+
+
+
+5-2. [스타일 파일 분리]
+HTML에서는 스타일을 정의한 CSS 파일을 따로 작성한 다음, <link rel='stylesheet' href='css 파일 경로'> 형식으로 불러와 사용.
+리액트의 JSX도 마찬가지로 별도의 CSS 스타일 파일을 만들고 이를 불러와 스타일을 적용할 수 있음.
+
+- src/component/Body.css
+.body {
+  background-color: green;
+  color: blue;
+}
+- src/component/Body.js
+import "./Body.css"; ①
+
+function Body() {
+  return (
+    <div className="body"> ②
+      <h1>body</h1>
+    </div>
+  );
+}
+
+export default Body;
+- ① CSS 파일은 import 문으로 경로만 명시하면 불러올 수 있음.
+- ② JSX에서는 HTML 문법과는 달리 요소의 이름을 지정할 때 class 선택자가 아닌 className을 사용. class가 자바스크립트의 예약어 이기 때문.
