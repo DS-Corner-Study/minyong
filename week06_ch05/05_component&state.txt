@@ -1,0 +1,492 @@
+[컴포넌트와 상태]
+지금까지 값이 변하지 않는 정적인 리액트 컴포넌트를 만들었음.
+지금부터는 사용자의 행위나 시간 변동에 따라 값이 변하는 동적인 리액트 컴포넌트를 만들 것.
+이를 위해서는 리액트의 핵심 기능 중 하나인 State를 알아야 함.
+이번 절에서는 State를 이용해 동적인 컴포넌트를 만드는 방법을 살펴볼 것.
+
+
+
+1. [State 이해하기]
+
+State: 상태: 어떤 사물의 형편이나 모양을 일컫는 말로 일상 생활에서도 흔히 사용.
+전구와 스위치에 빗대어 생각하면 쉽게 이해 가능.
+전구의 상태는 '소등'과 '점등'으로 나눌 수 있음.
+점등 상태일 때 스위치를 끄면 '소등 상태'로 상태 변화.
+소등 상태일 때 스위치를 켜면 '점등 상태'로 상태 변화.
+
+->용어를 상태가 아닌 State로 변경.
+전구 State는 off(소등), on(점등) 둘 중 하나의 값을 가짐.
+전구 State의 값이 off일 때 스위치를 켜면 값이 on으로 바뀜.
+전구 State의 값이 on일 때 스위치를 끄면 값이 off로 바뀜. 
+
+전구의 상태와 리액트 컴포넌트의 State는 매우 유사.
+전구의 상태가 상태 변화에 따라 점등 또는 소등으로 변하는 것처럼 리액트 컴포넌트 또한 State 값에 따라 다른 결과를 렌더링.
+
+
+
+2. [State의 기본 사용법]
+
+2-1. [useState로 State 생성하기]
+
+리액트에서는  함수 'useState'로 State를 생성.
+
+# useState의 문법.
+const [light, setLight] = useState('off');
+    State 변수 set 함수 생성자(초깃값)
+- useState를 호출하면 2개의 요소가 담긴 배열을 반환.
+- 이때 배열의 첫 번째 요소 'light'는 현재 상태의 값을 저장하고 있는 변수. = 'State 변수'
+- 두 번째 요소인 'setLight'는 State 변수의 값을 변경하는(상태를 업데이트하는) 함수. = 'set 함수'
+- useState를 호출할 때 인수로 값을 전달하면 이 값이 State의 초깃값이 됨. 위 코드에서는 off를 전달했으므로 State 변수 light의 초깃값은 off가 됨.
+
+# Body 컴포넌트 수정: 숫자를 카운트할 수 있는 State 변수 count를 생성.
+import { useState } from "react"; ①
+
+function Body() {
+  const [count, setCount] = useState(0); ②
+  return (
+    <div>
+      <h2>{count}</h2>
+    </div>
+  );
+}
+
+export default Body;
+- ① useState는 리액트가 제공하는 State를 만드는 함수. State를 만들기 위해 useState를 react 라이브러리에서 불러옴.
+- ② 함수 useState는 인수로 State의 초깃값을 전달. 코드에서는 초깃값으로 0을 전달. 그 결과 State 변수 count와 set 함수 setCount를 반환.
+
+
+
+2-2. [set 함수로 State 값 변경하기]
+
+set 함수를 호출해 State 값을 변경.
+컴포넌트에서 버튼을 하나 만들고, 버튼을 클릭할 때마다 State(count) 값을 1씩 늘릴 것.
+# Body 컴포넌트 수정.
+import { useState } from "react";
+
+function Body() {
+  const [count, setCount] = useState(0); 
+
+  const onIncrease = () => { ①
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <h2>{count}</h2>
+      <button onClick={onIncrease}>+</button>
+    </div>
+  );
+}
+export default Body;
+- ① 버튼의 이벤트 핸들러 onIncrease에서는 set 함수인 setCount를 호출. 인수로 count에 1 더한 값을 전달.
+
+이렇듯 set 함수를 호출해 State 값을 변경하면, 변경값을 페이지에 반영하기 위해 컴포넌트를 다시 렌더링 함. = '컴포넌트의 업데이트'
+컴포넌트가 페이지에 렌더링하는 값은 컴포넌트 함수의 반환값.
+-> 컴포넌트를 다시 렌더링한다고 함은 컴포넌트 함수를 다시 호출한다는 의미와 같음.
+
+컴포넌트 함수를 다시 호출한다는 게 어떤 의미인지 확인.
+# Body 컴포넌트 수정: Body를 호출할 때만다 콘솔에 문자열 Update!를 출력하도록 Body 컴포넌트를 수정.
+import { useState } from "react";
+
+function Body() {
+  console.log("Update!"); ①
+
+  const [count, setCount] = useState(0);
+
+  const onIncrease = () => {
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <h2>{count}</h2>
+      <button onClick={onIncrease}>+</button>
+    </div>
+  );
+}
+export default Body;
+- ① Body 컴포넌트를 호출할 때마다 콘솔에 문자열 Update!를 출력.
+
+컴포넌트는 자신이 관리하는 State 값이 변하면 다시 호출됨.
+그리고 변경된 State 값을 페이지에 렌더링.
+State 값이 변해 컴포넌트를 다시 렌더링하는 것을 '리렌더' 또는 '리렌더링'이라고 함.
+리액트 컴포넌트는 자신이 관리하는 State 값이 변하면 자동으로 리렌더됨.
+
+
+
+3. [State로 사용자 입력 관리하기]
+
+웹 사이트에서는 다양한 입력 폼을 제공하는데, 사용자는 이 입력 폼을 이용해 텍스트, 숫자, 날짜 등의 정보를 입력함.
+
+HTML에서 입력 폼을 만드는 태그로는 다양한 형식의 정보를 입력할 수 있는 <Input> 태그, 
+여러 옵션에서 하나를 선택하도록 DropDown 목록을 보여주는 <Select> 태그, 
+여러 줄의 텍스트를 입력할 수 있는 <Textarea> 태그 등이 있음.
+
+입력 폼은 로그인, 회원 가입, 게시판, 댓글 등이 필요한 페이지에서 자주 활용되는 웹 개발의 필수 요소.
+리액트에서 State를 이용하면 다양한 입력 폼에서 제공되는 사용자 정보를 효과적으로 처리 가능.
+
+
+
+3-1. [<input> 태그로 텍스트 입력하기]
+
+<input>태그: 텍스트, 전화번호, 날짜, 체크박스 등 여러 형식의 정보를 입력할 수 있음.
+
+<input>태그로 텍스트를 입력하는 폼을 하나 만들고, 사용자가 텍스트를 입력할 때마다 콘솔에 출력하는 이벤트 핸들러를 구현.
+# Body 컴포넌트 수정.
+import { useState } from "react";
+
+function Body() {
+  const handleOnChange = (e) => { ①
+    console.log(e.target.value);
+  };
+  return (
+    <div>
+      <input onChange={handleOnChange} /> ②
+    </div>
+  );
+}
+export default Body;
+- ① 입력 폼에서 이벤트 핸들러로 사용할 함수 handleOnChange를 만듦. 이 함수는 이벤트 객체를 매개변수로 저장해 사용자가 폼에 입력한 값(e.target.value)을 콘솔에 출력
+- ② <input>태그로 텍스트를 입력할 폼을 만들고, 이 폼의 onChange 이벤트 핸들러로 handleOnChange를 설정. onChange 이벤트는 사용자는 사용자가 입력 폼에서 텍스트를 입력하면 바로 발생.
+
+@ <input> 태그로 만들ㄹ 수 있는 입력 폼은 매우 다양. <input> 태그의 type 속성에서 text를 지정하면 텍스트 폼, date를 지정하면 날짜 형식의 폼, tel을 지정하면 전화번호 형식의 폼을 만듦.
+  이외에도 라디오 버튼이나 체크박스 등도 <input> 태그를 이용해 만들 수 있음. 
+  type 속성에서 아무것도 지정하지 않으면 기본 입력 폼인 텍스트 폼을 만듦.
+
+이 상태로도 텍스트 입력 폼을 이용해 사용자에게 입력을 받을 수 있음.
+그러나 지금은 사용자가 입력한 텍스트가 리액트 컴포넌트가 관리하는 State에 저장되어 있지는 않음.
+-> 만약 버튼을 클릭했을 때 사용자가 입력한 텍스트를 콘솔에 출력하는 등의 동작을 수행하게 하려면 돔 API를 이용하는 등 번거로운 작업이 별도로 요구됨.
+
+-> State를 하나 만들고 사용자가 폼에서 입력할 때마다 텍스트를 State 값으로 저장.
+# Body 컴포넌트 수정.
+import { useState } from "react";
+
+function Body() { 
+  const [text, setText] = useState(""); ①
+  const handleOnChange = (e) => {
+    setText(e.target.value); ②
+  };
+  return (
+    <div>
+      <input value={text} onChange={handleOnChange} /> ③
+      <div>{text}</div> ④
+    </div>
+  );
+}
+
+export default Body;
+- ① 빈 문자열을 초깃값으로 하는 Stte 변수 text를 생성.
+- ② 폼에 입력한 텍스트를 변경할 때마다 set 함수를 호출해 text 값을 현재 입력한 텍스트로 변경.
+- ③ <input>태그의 value 속성에 변수 text를 설정.
+
+정리하면 입력 폼에서 사용자가 텍스트를 입력하면 onChange 이벤트가 발생해 이벤트 핸들러 handleOnChane를 호출. 
+handleOnChange는 내부에서 set 함수를 호출하는데, 인수로 현재 사용자가 입력한 텍스트를 전달.
+그 결과 사용자가 폼에서 입력한 값은 text에 저장되면서 State 값을 업데이트.
+
+State 값이 변경되면 컴포넌트는 자동으로 리렌더됨.
+즉, 위 코드를 통해 폼에서 임의의 텍스트를 입력하면, 다음 줄에서 입력한 텍스트를 그대로 렌더링.
+
+
+
+3-2. [<input> 태그로 날짜 입력하기]
+
+<input> 태그에서 type 속성을 "date"로 설정하면 날짜 형식의 데이터 입력 가능.
+
+# Body 컴포넌트 수정: State를 이용해 날짜 형식의 데이터를 입력 정보로 받음.
+import { useState } from "react";
+
+function Body() {
+  const [date, setDate] = useState("");
+  const handleOnChange = (e) => {
+    console.log("변경된 값: ", e.target.value);
+    setDate(e.target.value);
+  };
+  return (
+    <div>
+      <input type="date" value={date} onChange={handleOnChange} />
+    </div>
+  );
+}
+
+export default Body;
+- 입력 폼에서 날짜를 변경하면 콘솔에서도 변경된 날짜가 바로 출력됨.
+
+<input> 태그에서 type을 date로 설정하면 onChange 이벤트가 발생했을 때 이벤트 객체의 e.target.value에는 문자열로 이루어진 yyyy-mm-dd 형식의 날짜가 저장됨.
+-> 날짜 형식을 지정하는 별도의 처리 없이도 텍스트 폼에서 입력할 때 처럼 State 값을 날짜 형식으로 저장 가능.
+
+
+
+3-3. [드롭다운 상자로 여러 옵션 중에 하나 선택하기]
+
+<select> 태그는 <option>과 함께 사용.
+해당 태그를 사용하면 DropDown 메뉴로 여러 목록을 나열해 보여 주는 입력 폼이 만들어짐.
+이 폼 목록에서 하나를 선택하면 해당 항목을 입력 가능.
+드롭다운 입력 폼은 쇼핑몰 사이트에서 여러 옵션을 선택할 때 자주 활용.
+
+# Body 컴포넌트 수정: 드롭다운 입려 폼에서 입력한 값을 State로 처리.
+import { useState } from "react";
+
+function Body() {
+  const [option, setOption] = useState("");
+  const handleOnChange = (e) => {
+    console.log("변경된 값: ", e.target.value);
+    setOption(e.target.value);
+  };
+
+  return (
+    <div>
+      <select value={option} onChange={handleOnChange}>
+        <option key={"1번"}>1번</option>
+        <option key={"2번"}>2번</option>
+        <option key={"3번"}>3번</option>
+      </select>
+    </div>
+  );
+}
+export default Body;
+
+드롭다운 입력 폼에서 사용자가 옵션을 변경하면 OnChange 이벤트가 발생.
+이때 이벤트 핸들러에 제공되는 이벤트 객체 e.target.value에는 현재 사용자가 선택한 옵션의 key 속성이 저장됨.
+만약 사용자가 3번 옵션을 선택하면 해당 옵션의 key 속성인 3번이 e.target.value에 저장됨.-> 이 값으로 현재 State에 저장된 값을 변경.
+
+
+
+3-4. [글상자로 여러 줄의 텍스트 입력하기]
+
+<textarea> 태그는 사용자가 여러 줄의 텍스트를 입력할 때 사용하는 폼을 만듦.
+이 폼은 웹 페이지에서 사용자가 자기소개와 같이 여러 줄의 내용을 입력할 때 주로 활용.(해당 폼을 편의상 글상자라고 지칭.)
+
+# Body 컴포넌트 수정: 글 상자에 입력한 내용을 State로 처리.
+import { useState } from "react";
+
+function Body() {
+  const [text, setText] = useState("");
+  const handleOnChange = (e) => {
+    console.log("변경된 값 : ", e.target.value);
+    setText(e.target.value);
+  };
+
+  return (
+    <div>
+      <textarea value={text} onChange={handleOnChange} />
+    </div>
+  );
+}
+export default Body;
+
+<textarea>는 <input> 태그의 입력 폼과 동일한 형태로 텍스트를 처리.
+사용자가 텍스트를 입력하면 onChange 이벤트가 발생.
+이벤트 핸들러는 이벤트 객체의 e.target.value에 저장된 값을 인수로 전달해 State 값을 변경.
+
+
+
+3-5. [여러 개의 사용자 입력 관리하기]
+
+# Body 컴포넌트 수정: 여러 개의 사용자 입력을 State로 관리.(이름, 성별, 출생 연도, 자기소개 등을 한번에 입력.)
+import { useState } from "react";
+
+function Body() {
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState("");
+  const [birth, setBirth] = useState("");
+  const [bio, setBio] = useState("");
+
+  const onChangeName = (e) => {
+    setName(e.target.value);
+  };
+  const onChangeGender = (e) => {
+    setGender(e.target.value);
+  };
+  const onChangeBirth = (e) => {
+    setBirth(e.target.value);
+  };
+  const onChangeBio = (e) => {
+    setBio(e.target.value);
+  };
+
+  return (
+    <div>
+      <div>
+        <input value={name} onChange={onChangeName} placeholder="이름" /> ①
+      </div>
+      <div>
+        <select value={gender} onChange={onChangeGender}> ②
+          <option key={""}></option>
+          <option key={"남성"}>남성</option>
+          <option key={"여성"}>여성</option>
+        </select>
+      </div>
+      <div>
+        <input type="date" value={birth} onChange={onChangeBirth} /> ③
+      </div>
+      <div>
+        <textarea value={bio} onChange={onChangeBio} /> ④
+      </div>
+    </div>
+  );
+}
+export default Body;
+- ① <input> 태그의 입력 폼에서 이름을 받고, State(name)으로 관리.
+- ② <select> 태그의 드롭다운 폼에서 성별을 받고, State(gender)로 관리.
+- ③ type이 date인 <input> 태그의 입력 폼에서 생년월일을 받고, State(birth)로 관리.
+- ④ <textarea> 태그의 글상자에서 자기소개 내용을 받고, State(bio)로 관리.
+- <input>태그의 placeholder 속성: 입력 필드에 사용자가 적절한 값을 입력할 수 있도록 도와주는 짧은 도움말 명시.
+
+사용자로부터 여러 입력 정보를 받아 State로 처리하는 경우, 관리할 State의 개수가 많아지면 코드의 길이 또한 길어짐.
+객체 자료형을 이용하면 입력 내용이 여러 가지라도 하나의 State에서 관리할 수 있어 더 간결한 코드 작성 가능.
+
+# Body 컴포넌트 수정.
+import { useState } from "react";
+
+function Body() {
+  const [state, setState] = useState({ ①
+    name: "",
+    gender: "",
+    birth: "",
+    bio: "",
+  });
+
+  const handleOnChange = (e) => {
+    console.log("현재 수정 대상:", e.target.name);
+    console.log("수정값:", e.target.value);
+    setState({
+      ...state,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  return (
+    <div>
+      <div>
+        <input
+          name="name" ②
+          value={state.name} ③
+          onChange={handleOnChange} ④
+          placeholder="이름"
+        />
+      </div>
+      <div>
+        <select name="gender" value={state.gender} onChange={handleOnChange}>
+          <option key={""}></option>
+          <option key={"남성"}>남성</option>
+          <option key={"여성"}>여성</option>
+        </select>
+      </div>
+      <div>
+        <input
+          name="birth"
+          type="date"
+          value={state.birth}
+          onChange={handleOnChange}
+        />
+      </div>
+      <div>
+        <textarea name="bio" value={state.bio} onChange={handleOnChange} />
+      </div>
+    </div>
+  );
+}
+
+export default Body;
+- ① 객체 자료형으로 State를 하나 생서하고 초깃값을 설정. State 변수인 객체 state의 초깃값은 모두 공백 문자열("")이며, name, gender, birth, bio 프로퍼티가 있음.
+- ② 모든 입력 폼에서 name 속성을 지정. 예을 들어 이름을 입력하는 <input> 태그의 name 속성은 "name"으로 지정. 나머지 태그들도 name 속성을 추가.
+- ③ 모든 입력 폼의 value를 객체 state의 프로퍼티 중 하나로 설정. 예를 들어 이름을 입력하는 <input> 태그의 value 속성에는 state.name을 지정하는데, 객체 state의 name 프로퍼티와 동일한 값으로 설정. 나머지 태그에도 vlaue 속성을 이와 같이 변경.
+- ④ 사용자의 입력을 처리할 이벤트 핸들러 handleOnChange를 생성. 나머지 태그에도 동일하게 생성.
+- 이벤트 핸들러는 이벤트 객체 e를 매개변수로 저장하고 setState를 호출.
+- 함수 setState에서는 새로운 객체를 생성해 전달. 스프레드 연산자를 이용해 기존 객체 state의 값을 나열, 객체의 괄호 표기법을 사용하여 입력 폼의 name 속성(e.targer.name)을 key로, 입력 폼에 입력한 값(e.targe.value)을 value로 저장.
+- e.targe.name은 현재 이벤트가 발생한 요소의 name 속성. 예를 들어 성별을 입력하는 <select> 태그에서 onChange 이벤트가 발생했다면, e.target.name은 gender가 됨. 결국 객체 state의 4가지 프로퍼티 중 현재 이벤트가 발생한 요소인 gender 프로퍼티의 value 값을 변경하게 됨.
+
+객체 지료형을 이용하면 하나의 State로 여러 개의 입력을 동시에 관리 가능.
+
+
+
+4. [Props와 State]
+
+동적으로 변하는 값인 리액트의 State 역시 일종의 값이므로 Props로 전달 가능.
+
+# Body 컴포넌트 수정: Body에 자식 컴포넌트 만들고 Body의 State를 Props로 전달.
+import "./Body.css";
+import { useState } from "react";
+
+function Viewer({ number }) { ①
+  return <div>{number % 2 === 0 ? <h3>짝수</h3> : <h3>홀수</h3>}</div>;
+}
+
+function Body() {
+  const [number, setNumber] = useState(0);
+
+  const onIncrease = () => {
+    setNumber(number + 1);
+  };
+  const onDecrease = () => {
+    setNumber(number - 1);
+  };
+
+  return (
+    <div>
+      <h2>{number}</h2>
+      <Viewer number={number} /> ② 
+      <div>
+        <button onClick={onDecrease}>-</button>
+        <button onClick={onIncrease}>+</button>
+      </div>
+    </div>
+  );
+}
+export default Body;
+- ① Viewer 컴포넌트를 선언. 이 컴포넌트에는 Props로 Body 컴포넌트에 있는 State 변수 number가 전달됨. Viewer 컴포넌트는 조건부 렌더링을 이용해 변수 number의 값을 평가하고, 값에 따라 짝수 또는 홀수 값을 페이지에 렌더링.
+- ② Body에서 Viewer를 자식 컴포넌트로 사용하며, Props로 변수 number를 전달.
+
+자식 컴포넌트는 Props로 전달된 State 값이 변하면 자신도 리렌더됨.
+즉, 부모에 속해 있는 State(numbeer)값이 변하면 Viewer 컴포넌트에서 구현한 '짝수', '홀수' 값도 변함.
+
+
+
+5. [State와 자식 컴포넌트]
+
+부모의 State 값이 변하면 해당 State를 Props로 받은 자식 컴포넌트 역시 리렌더된다는 것을 배움.
+그렇다면 부모 컴포넌트가 자식에게 State를 Props로 전달하지 않는 경우는? 그래도 부모 컴포넌트의 State가 변하면 자식 컴포넌트도 리렌더 될까?
+# Body 컴포넌트 수정.
+import { useState } from "react";
+
+function Viewer() { ①
+  console.log("viewer component update!");
+  return <div>Viewer</div>;
+}
+
+function Body() {
+  const [number, setNumber] = useState(0);
+  const onIncrease = () => {
+    setNumber(number + 1);
+  };
+  const onDecrease = () => {
+    setNumber(number - 1);
+  };
+
+  return (
+    <div>
+      <h2>{number}</h2>
+      <Viewer /> ②
+      <div>
+        <button onClick={onDecrease}>-</button>
+        <button onClick={onIncrease}>+</button>
+      </div>
+    </div>
+  );
+}
+
+export default Body;
+- ① Viewer 컴포넌트가 Props를 받지 않음. console.log를 이용해 리렌더될 때마다 viewer component update!라는 메시지를 콘솔에 출력.
+- ② Body도 더 이상 Viewer 컴포넌트에 Props로 State를 전달하지 않음.
+
+(if)<+> 버튼을 정확히 5번 누른 다음 콘솔을 확인.
+-> 콘솔에서 6번의 viewer component update!가 출력.
+첫 번째 출력은 Viewer 컴포넌트를 페이지에 처음 렌더링할 때 출력된 것.
+나머지 5번은 부모인 Body 컴포넌트의 State가 변할 때마다 출력된 것.
+
+리액트에서는 부모 컴포넌트가 리렌더하면 자식도 함께 리렌더.
+사실 지금의 Viewer는 Body 컴포넌트의 State가 변한다고 해서 리렌더할 이유가 없음.( Viewer 컴포넌트의 내용에는 변한 게 없기 때문.)
+
+의미 없는 리렌더가 자주 발생하면 웹 브라우저의 성능은 떨어짐.
+따라서 컴포넌트의 부모-자식 관계에서 State를 사용할 때는 늘 주의가 필요.
+리액트에서는 이런 성능 낭비를 막는 최적화 기법이 있는데, 이는 추후에 살펴볼 것.
