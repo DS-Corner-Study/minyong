@@ -61,31 +61,352 @@ ex2-1:  UTC+0시로부터 하루 뒤인 1970년 1월 2일을 저장하는 Date �
 let Jan02_1970 = new Date(24 * 3600 * 1000);
 console.log(Jan02_1970);
 // Fri Jan 02 1970 09:00:00 GMT+0900 (한국 표준시)
-- 
+- Date 객체에는 타임 스탬프를 인수로 전달할 수 있는데, 그러면 UTC+0시부터 인수로 전달된 타임 스탬프 이후의 시간 정보를 갖는 Date 객체를 반환.
+- 즉, Date 객체 생성자에 하루 24시간에 해당하는 밀리초를 인수로 전달하면, UTC+0에서 하루가 지난 값을 반환.
+- 하루에 해당하는 밀리초인 24*3600 *1000을 Date 생성자의 인수로 전달.
+- UTC+0을 기준으로 하루 뒤인 1970년 1월 2일에, 한국 표준시 9시간이 더해져 값이 출력.
+
+<24*3600 *1000는?>
+- 1초는 1000밀리초, 1시간은 3600×(60×60)초, 하루는 24시간이기 때문에 24 × 3600 ×1000을 계산하면 하루를 의미하는 밀리초가 나옴.
+
+ex2-2: 생성된 Date 객체에서 역으로 타임 스탬프를 구하는 경우.
+
+let Jan02_1970 = new Date(24*3600 *1000);
+console.log(Jan02_1970.getTime());
+// 86400000
+- Date 객체의 getTime 메서드는 해당 객체에서 시간에 해당하는 타임 스탬프를 반환.
+- 변수 Jan02_1970에는 1970년 1월 1일부터 24*3600 *1000 밀리초 후의 시간을 Date 객체가 저장하고 있으므로, 86400000이라는 타임 스탬프 값을 반환. 
+
 
 
 3. [원하는 날짜로 Date 객체 생성하기]
+
+Date 객체 생성자에 밀리초에 해당하는 인수를 전달하면 UTC+0부터 해당 인수만큼 시간을 더한 Date 객체를 반환.
+
+그렇다면 2000년 10월 10일을 저장하는 Date 객체를 생성하려면 어떻게 해야 할까?
+-> 밀리초를 계산해서 인수로 전달하지 X, 비효율적
+
+
+
 3-1. [문자열로 특정 날짜 전달하기]
+
+Date 객체 생성자에 문자열로 표현된 날짜를 인수로 전달하면, 해당 날짜를 기준으로 Date 객체를 만들어 반환.
+
+ex3-1: Date 객체 생성자에 문자열로 특정 날짜 전달하는 경우.
+
+let date1 = new Date("2000-10-10/00:00:00"); 
+let date2 = new Date("2000.10.10/00:00:00"); 
+let date3 = new Date("2000/10/10/00:00:00"); 
+let date4 = new Date("2000 10 10/00:00:00"); 
+console.log("1:", date1); // 1: Tue Oct 10 2000 00:00:00 GMT+0900 (한국 표준시)
+console.log("2:", date2); // 2: Tue Oct 10 2000 00:00:00 GMT+0900 (한국 표준시)
+console.log("3:", date3); // 3: Tue Oct 10 2000 00:00:00 GMT+0900 (한국 표준시)
+console.log("4:", date4); // 4: Tue Oct 10 2000 00:00:00 GMT+0900 (한국 표준시)
+- 2000년 10월 10일이 저자된 4개의 Date 객체를 생성.
+- 4개의 Date 객체 생성자에 인수로 전달하는 날짜는 각각 다른 형식의 문자열.
+- Date 객체 생성자는 전달 형식이 다른 문자열을 자동으로 분석해 적절한 날짜를 설정,
+- 보통 위 코드의 4가지 형태의 날짜로 많이 작성.
+- 모든 형태의 문자열을 자동으로 분석할 수 있는 것은 아님.
+
+
+
 3-2. [숫자로 특정 날짜 전달하기]
+
+밀리초가 아니라 year, month, date, hours, minutes, seconds, milliseconds 순서로, 날짜와 시간에 해당하는 숫자를 전달해 원하는 Date 객체를 생성할 수 있음.
+
+ex3-2: Date 객체 생성자에 숫자로 특정 날짜 전달하는 경우.
+
+let date1 = new Date(2000, 10, 10, 0, 0, 0, 0);
+let date2 = new Date(2000, 9, 10);
+console.log("1:", date1); // 1: Fri Nov 10 2000 00:00:00 GMT+0900 (한국 표준시)
+console.log("2:", date2); // 2: Tue Oct 10 2000 00:00:00 GMT+0900 (한국 표준시)
+- 변수 date1은 year는 2000, month는 10, date는 10 그리고 나머지는 0을 전달해 생성한 Date 객체.
+- 그런데 결과를 보면 월의 출력이 Oct가 아닌 Nov임.
+- 이는 Date 객체가 해당 월의 시작을 1이 아니라 0부터 시작하기 때문.
+- 따라서 1월은 0, 12월은 11로 전달해야 원하는 출력 결과를 얻음.
+
+
+
 3-3. [타임 스탬프로 날짜 생성하기]
+
+타임 스탬프를 이용해 날짜를 생성하는 것도 가능.
+타임 스탬프는 숫자로 표현되어 있기 때문에 문자열이나 객체보다 저장 공간을 훨씬 적게 차지하여 빠른 비교와 탐색 가능.
+따라서 데이터베이스에서 날짜와 시간을 저장할 때 타임 스탬프 형태로 저장.
+
+ex3-3: 타임 스탬프로 날짜를 생성하는 경우.
+
+let date = new Date(2000, 9, 10);
+let timeStamp = date.getTime(); // 
+console.log(timeStamp); // 971103600000
+let dateClone = new Date(timeStamp); // 
+console.log(dateClone); // Tue Oct 10 2000 00:00:00 GMT+0900 (한국 표준시)
+- Date 객체의 getTime 메서드는 Date 객체에 저장된 날짜를 타임 스탬프로 변환해 반환.
+- Date 객체 생성자에 타임 스탬프값을 인수로 전달하면 자동 분석하여 적절한 날짜를 반환.
+
+
+
 3-4. [Date 객체에서 날짜 요소 얻기]
+
+날짜 요소란 연, 월, 일, 시간, 분, 초처럼 날짜를 구성하는 개별 요소임.
+지금부터 Date 객체 메서드로 날짜 요소를 어떻게 얻는지 볼 것.
+
+
+
 3-5. [getFullYear]
+
+getFullYear 메서드는 Date 객체에서 네 자릿수의 연도(year)를 반환.
+
+ex4-1: getFullYear 메서드를 사용하는 경우.
+
+let date = new Date(2000, 9, 10);
+console.log(date.getFullYear()); // 2000
+- 출력 결과로 네 자릿수 연도 2000을 반환
+
+<getYear 메서드는 왜 사용하지 않는가?>
+- 이전에는 연도를 얻기 위해 getYear 메서드를 사용했지만, 해당 메서드는 자바스크립트 엔진이 최신으로 업데이트되면서 더 이상 사용하지 않음. 이전에 개발된 프로그램 소스에서는 아직도 이 메서드의 흔적을 찾을 수 있는데, 앞으로는 사용하지 않는 게 좋음.
+
+
+
 3-6. [getMonth]
+
+getMonth 메서드는 Date 객체에서 0에서 11로 표현되는 월을 반환.
+
+ex4-2: getMonth 메서드를 사용하는 경우.
+
+let date = new Date(2000, 9, 10);
+console.log(date.getMonth()); // 9
+- 자바스크립트의 Date 객체는 월을 0부터 11까지 사이의 숫자로 반환하면서 표기는 1월부터 12월로 하므로 다소 혼란스러움.
+- 0~11 -> 1~12 임에 각별히 주의.
+
+
+
 3-7. [getDate]
+
+getDate 메서드는 Date 객체에서 일을 반환.
+
+ex4-3: getDate 메서드를 사용하는 경우.
+
+let date = new Date(2000, 9, 10);
+console.log(date.getDate()); // 10
+- getDate 메서드가 Date 객체에서 10일을 반환
+
+
+
 3-8. [getDay]
+
+getDay 메서드는 0부터 6으로 표현되는 요일을 반환.
+0은 항상 일요일이며, 6은 토요일.
+
+ex4-4: getDay 메서드를 사용하는 경우.
+
+let date = new Date(2000, 9, 10);
+console.log(date.getDay()); // 2
+- getDay메서드가 2를 반환. 2는 화요일.
+
+
+
 3-9. [getHours, getMinutes, getSeconds, getMilliseconds]
 
+각각 시간, 분, 초, 밀리초를 반환하는 메서드.
+
+ex4-5: getHours, getMinutes, getSeconds, getMilliseconds 메서드를 사용하는 경우.
+
+let date = new Date(2000, 9, 10);
+console.log(date.getHours()); // 0
+console.log(date.getMinutes()); // 0
+console.log(date.getSeconds()); // 0
+console.log(date.getMilliseconds()); // 0
+- Date 객체에 시간과 관련해서는 아무런 값도 인수로 전달하지 않았기 때문에 각각의 시간, 분, 초, 밀리초가 반환한 값은 0.
+
+
+
 4. [Date 객체의 날짜 요소 수정하기]
+
+Date 객체에는 저장된 날짜 요소를 개별적으로 수정할 수 있는 메서드가 있음.
+
+
+
 4-1. [setFullYear]
+
+setFullYear는 Date 객체의 연도를 수정할 때 사용하는 메서드.
+
+ex5-1: setFullYear 메서드.
+
+let date = new Date(2000, 9, 10);
+date.setFullYear(2021);
+console.log(date); // Sun Oct 10 2021 00:00:00 GMT+0900 (한국 표준시)
+- 연도의 값이 바뀐 것을 알 수 있음.
+
+
+
 4-2. [setMonth]
+
+setMonth는 Date 객체의 월을 수정할때 사용하는 메서드.
+
+ex5-2: setMonth 메서드.
+
+let date = new Date(2000, 9, 10);
+date.setMonth(10);
+console.log(date); // Fri Nov 10 2000 00:00:00 GMT+0900 (한국 표준시)
+
+
+
 4-3. [setDate]
+
+setDate는 Date 객체의 일을 수정할때 사용하는 메서드.
+
+ex5-3: setDate 메서드.
+
+let date = new Date(2000, 9, 10);
+date.setDate(11);
+console.log(date); // Wed Oct 11 2000 00:00:00 GMT+0900 (한국 표준시)
+
+
+
 4-4. [setHours, setMinutes, setSeconds]
 
+setHours, setMinutes, setSeconds는 각각 시, 분, 초를 수정할 때 사용하는 메서드.
+
+ex5-4: setHours, setMinutes, setSeconds 메서드.
+
+let date = new Date(2000, 9, 10);
+date.setHours(1);
+date.setMinutes(1);
+date.setSeconds(1);
+console.log(date); // Tue Oct 10 2000 01:01:01 GMT+0900 (한국 표준시)
+
+
+
 5. [Date 객체 출력하기]
+
+Date 객체에는 현재 저장된 시간을 다양한 형태의 문자열로 반환하는 메서드가 있음.
+이 메서드를 이용해 Date 객체에 저장된 시간을 콘솔에 출력.
+
+
+
 5-1. [toString]
+
+Date 객체의 toString 메서드는 현재 저장된 시간을 문자열로 반환.
+이 메서드를 사용하면 Date 객체를 콘솔에 출력했을 때와 동일한 형태의 문자열을 얻을 수 있음.
+이것을 자바스크립트 엔진이 Date 객체를 출력할 때 자동으로 해당 객체의 toString 메서드를 호출하기 때문.
+
+ex6-1: toString 메서드.
+
+const today = new Date(2000, 9, 10, 22);
+console.log(today.toString()); // Tue Oct 10 2000 22:00:00 GMT+0900 (한국 표준시)
+
+
+
 5-2. [toDateString]
+
+toDateString은 시간을 제외하고 현재의 날짜만 출력하는 메서드.
+
+ex6-2: toDateString 메서드.
+
+const today = new Date(2000, 9, 10, 22);
+console.log(today.toDateString()); // Tue Oct 10 2000
+
+
+
 5-3. [toLocaleString, toLocaleDateString]
 
+toLocaleString과 toLocaleDateString은 '현지화'된 날짜와 시간을 반환.
+'현지화'란 Date 객체에 있는 날짜와 시간은 현재 우리가 속한 시간대에 맞게 변환한다는 뜻.
+
+ex6-3: toLocaleString, toLocaleDateString 메서드.
+
+const today = new Date(2000, 9, 10, 22);
+console.log(today.toLocaleString()); // 2000. 10. 10. 오후 10:00:00
+console.log(today.toLocaleDateString()); // 2000. 10. 10.
+- toLocaleString 메서드는 날짜와 시간으 모두 반환하지만, toLocaleDateString은 날짜만 반환.
+- 한국은 Asia/Seoul 시간대에 속하기 때문에 '오후'처럼 현지화된 반환값을 볼 수 있음.
+
+
+
 6. [Date 객체 응용하기]
+
+Date 객체는 실무에서 다양하게 이용. 
+지금까지 배운 Date 객체의 사용법과 메서드를 이용해 실무에서 자주 활용하는 몇 가지 기능을 추가로 알아볼 것.
+
+
+
 6-1. [n 월씩 이동하기]
+
+오늘날 캘린더 또는 일정 예약과 관련한 웹 서비스에는 월 단위로 달력을 이동할 수 있는 기능을 제공.
+
+ex7-1: Date 객체를 응용해 날짜를 n월씩 이동하는 기능. 
+
+function moveMonth(date, moveMonth) { // 
+  const curTimestamp = date.getTime(); // 
+  const curMonth = date.getMonth(); // 
+
+  const resDate = new Date(curTimestamp); // 
+  resDate.setMonth(curMonth + moveMonth); //
+
+  return resDate;
+}
+const dateA = new Date("2000-10-10");
+console.log("A: ", dateA); // A : Tue Oct 10 2000 09:00:00 GMT+0900 (한국 표준시)
+const dateB = moveMonth(dateA, 1);
+console.log("B: ", dateB); // B : Fri Nov 10 2000 09:00:00 GMT+0900 (한국 표준시)
+const dateC = moveMonth(dateA, -1);
+console.log("C: ", dateC); // C : Sun Sep 10 2000 09:00:00 GMT+0900 (한국 표준시)
+- 함수 moveMonth에는 Date 객체와 이동할 월(month)인 moveMonth, 두개의 매개변수.
+- 매개변수 date에 저장된 Date 객체의 타임 스탬프를 변수 curTimestamp에 저장.
+- 매개변수 date에 저장된 Date 객체에서 월을 구해 변수 curMonth에 저장.
+- 변수 resDate를 만들고 새로운 Date 객체를 생성. 
+- Date 객체를 만들면서 앞서 구한 타임스탬프 값을 인수로 전달.
+- 결과적으로 변수 resDate에는 date 객체와 동일한 타임 스탬프값이 들어 있는 Date 객체가 저장.
+- 변수 resDate에 저장된 Date 객체에서 setMonth 메서드를 호출해 기존 월에 moveMonth만큼 더 한 월을 새로운 월로 저장.
+- 결론적으로 이 함수를 호출하면 moveMonth만큼 월을 앞으로 또는 뒤로 이동.
+
+
+
 6-2. [배열에서 이번 달에 해당하는 날짜만 필터링하기]
+
+ex7-2: 여러 개의 Date 객체를 저장하고 있는 배열에서 이번 달에 해당하는 Date 객체만 필터링해 새 배열로 만드는 경우.
+
+function filterThisMonth(pivotDate, dateArray) {  // ①
+  const year = pivotDate.getFullYear();
+  const month = pivotDate.getMonth();
+
+  const startDay = new Date(year, month, 1, 0, 0, 0, 0); // ②
+  const endDay = new Date(year, month + 1, 0, 23, 59, 59); // ③
+
+  const resArr = dateArray.filter(
+    (it) =>
+      startDay.getTime() <= it.getTime() && // ④
+      it.getTime() <= endDay.getTime()
+  );
+  return resArr;
+}
+
+const dateArray = [
+  new Date("2000-10-1"),
+  new Date("2000-10-31"),
+  new Date("2000-11-1"),
+  new Date("2000-9-30"),
+  new Date("1900-10-11")
+];
+
+const today = new Date("2000-10-10/00:00:00"); // 오늘은 2000년 10월 10일이라고 가정합니다.
+const filteredArray = filterThisMonth(today, dateArray);
+
+console.log(filteredArray);
+
+// 0: Sun Oct 01 2000 00:00:00 GMT+0900 (한국 표준시)
+// 1: Tue Oct 31 2000 00:00:00 GMT+0900 (한국 표준시)
+- ① 함수 filterThisMonth에는 인수로 전달된 두 개의 매개변수. dateArray는 코드에서 작성한 Date 객체 배열이며, pivotDate는 필터링할 월이 있는 Date 객체. 
+- ② 이번 달의 가장 빠른 시간은 1일 0시 0분 0초로 설정하여 구함. 
+- ③ 이번 달의 가장 늦은 시간은 다음 달 0일의 23시 59분 59초(이번 달의 가장 마지막 날을 의미)로 설정해 구함. 
+- ④ filter 메서드를 이용해 dateArray에서 이번 달에 속하는 요소만 필터링. 
+- 서로 다른 Date 객체를 비교할 때는 getTime 메서드로 타임 스탬프를 기준으로 비교. 
+- 특정 Date 객체가 더 크다는 것은 이 객체가 더 미래에 있는 시간이라는 뜻.
+
+- 이번 달에 해당하는 날짜가 있는 Date 객체를 필터링하기 위해서는 다음과 같은 2가지 작업 필요.
+- 1. 이번 달에서 가장 빠른 시간, 가장 늦은 시간 구하기
+- 2. 1번에서 구한 시간 내에 포함되는 Date 객체를 필터링
+- 출력 결과를 보면 2000s년 10월 1일에서 10월 31일 사이에 있는 배열 요소만 출력.
+
+<왜 이달의 가장 늦은 시간이 다음 달 0일 23시 59분 59초인가?>
+- 자바스크립트의 Date 객체에서 date 즉 일을 0으로 설정하면 해당 월 바로 이전 월의 마지막 날을 의미. 자바스크립트의 Date 객체에서 date 즉 일을 0으로 설정하면 해당 월 바로 이전 월의 마지막 날을 의미.
