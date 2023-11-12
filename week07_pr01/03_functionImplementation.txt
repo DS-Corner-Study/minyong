@@ -1,0 +1,164 @@
+[기능 구현하기]
+
+1. [State를 이용해 카운터 기능 구현하기]
+
+구현한 카운터의 기능: Coontroller 컴포넌트에 있는 버튼을 클릭하면, Viewer 컴포넌트에 있는 카운터가 증가하거나 감소.
+
+버튼 클릭 이벤트 발생 시 컴포넌트 값을 동적으로 렌더링하려면 리액트의 State를 사용해야 함.
+-> 먼저 카운트를 관리할 State를 만들고 초깃값을 0으로 설정. 
+-> Controller 컴포넌트의 버튼을 클릭하면 현재 State 값을 버튼이 전달하는 값과 계산해 변경.
+-> 변경된 State 값은 Viewer 컴포넌트에 전달되어 페이지의 카운트 값을 업데이트.
+
+
+
+2. [State는 어떤 컴포넌트에 만들까?]
+
+State는 반드시 컴포넌트 함수 안에 만들어야 함. 
+'카운터'앱의 경우 3개의 컴포넌트 중 어디에서? = App 컴포넌트에서 만들어야 함.
+
+
+
+2-1. [오답 1: Viewer 컴포넌트]
+
+Viewer 컴포넌트에서 '카운터'앱에 사용할 State를 만듦.
+
+# Viewer.js 수정.
+import { useState } from "react";
+
+const Viewer = () => {
+  const [count, setCount] = useState(0); ①
+  return (
+    <div>
+      <div>현재 카운트: </div>
+      <h1>{count}</h1> ②
+    </div>
+  );
+};
+
+export default Viewer;
+- ① useState를 이용해 State 변수 count를 만듦.
+- ② count 값을 페이지에 렌더링.
+
+Viewer 컴포넌트에서 State를 만들고 값을 렌더링했으므로 Controller 컴포넌트에서 버튼을 클릭하면 set 함수인 setCount를 호출해야 함.
+but, Viewer 컴포넌트가 Controller 컴포넌트에 setCount를 전달할 방법x.
+리액트에서 컴포넌트가 다른 컴포넌트에 데이터를 전달할 때는 Props를 사용하는데, Props는 부모만이 자식에게 전달 가능.
+Viewer와 Controller 컴포넌트는 부모-자식 관계가 아니므로 어떠한 값도 전달 불가.
+
+
+
+2-2. [오답 2: Controller 컴포넌트]
+
+Controller 컴포넌트에 '카운터'앱에 사용할 State를 만듦.
+
+# Controller.js 수정.
+import { useState } from "react";
+const Controller = () => {
+  const [count, setCount] = useState(0);
+  const handleSetCount = (value) => { ①
+    setCount(count + value);
+  };
+
+  return (
+    <div>
+      <button onClick={() => handleSetCount(-1)}>-1</button> ②
+      <button onClick={() => handleSetCount(-10)}>-10</button> ③
+      <button onClick={() => handleSetCount(-100)}>-100</button> ④
+      <button onClick={() => handleSetCount(100)}>+100</button> ⑤
+      <button onClick={() => handleSetCount(10)}>+10</button> ⑥
+      <button onClick={() => handleSetCount(1)}>+1</button> ⑦
+    </div>
+  );
+};
+export default Controller;
+- ① 버튼에서 클릭 이벤트가 발생하면 호출되는 이벤트 핸들러 handleSetCount를 만듦. 이 함수에서 set 함수 setCount를 호출하는데, 인수로 현재 State(count) 값과 매개변수 value 값을 더해 전달.
+- ②~⑦ 6개의 버튼을 모두 클릭 이벤트가 발생하면 이벤트 핸들러 handleSetCount를 호출. 해당 버튼의 숫자를 인수로 전달.
+
+버튼을 클릭하면 State는 기존 값에서 해당 버튼의 숫자와 계산한 값으로 변경됨.
+but, 변경된 State값을 Viewer 컴포넌트에 전달할 방법x.
+
+
+
+2-3. [정답: App 컴포넌트]
+
+App 컴포넌트에서 State를 만들고 카운트 기능을 완성.
+
+# App.js 수정.
+import "./App.css";
+import { useState } from "react";
+import Controller from "./component/Controller";
+import Viewer from "./component/Viewer";
+
+function App() {
+  const [count, setCount] = useState(0);
+  const handleSetCount = (value) => {
+    setCount(count + value);
+  };
+
+  return (
+    <div className="App">
+      <h1>Simple Counter</h1>
+      <section>
+        <Viewer count={count} /> ①
+      </section>
+      <section>
+        <Controller handleSetCount={handleSetCount} /> ②
+      </section>
+    </div>
+  );
+}
+export default App;
+- ① Viewer 컴포넌트에 State 변수 count의 값을 Props로 전달.
+- ② Controller 컴포넌트에 State 값을 변경하는 함수 setCount를 Props로 전달.
+
+# Viewer 컴포넌트에서 App에서 받은 Props를 페이지에 렌더링.
+const Viewer = ({ count }) => {
+  return (
+    <div>
+      <div>현재 카운트 : </div>
+      <h1>{count}</h1>
+    </div>
+  );
+};
+export default Viewer;
+- App 컴포넌트에서 받은 Props를 페이지에 렌더링.
+- 리액트에서는 부모가 리렌더되거나 전달된 Props가 변경되면 자식 컴포넌트도 자동으로 리렌더 -> Viewer 컴포넌트는 Props로 받은 State 값이 변경될 때마다 리렌더되어 실시간으로 이 값을 페이지에 렌더링.
+
+# Controller.js 수정.
+const Controller = ({ handleSetCount }) => {
+  return (
+    <div>
+      <button onClick={() => handleSetCount(-1)}>-1</button>
+      <button onClick={() => handleSetCount(-10)}>-10</button>
+      <button onClick={() => handleSetCount(-100)}>-100</button>
+      <button onClick={() => handleSetCount(100)}>+100</button>
+      <button onClick={() => handleSetCount(10)}>+10</button>
+      <button onClick={() => handleSetCount(1)}>+1</button>
+    </div>
+  );
+};
+export default Controller;
+- App 컴포넌트에서 함수 handleSetCount를 받아 버튼의 이벤트 핸들러로 사용. 
+- 버튼을 클릭하면 함수 handleSetCount를 호출하는데, 이 함수는 App 컴포넌트의 State 값을 업데이트.
+
+@ 정리
+State 값은 Viewer 컴포넌트, set함수는 Controller 컴포넌트에 전달되어야 하기 때문에 State를 App 컴포넌트에서 만들어야 함.
+
+State 끌어올리기(State Lifting): 리액트는 State 값이나 set함수를 여러 컴포넌트에서 사용하는 경우, 이들을 상위 컴포넌트에서 관리.
+
+
+
+3. [리액트답게 설계하기]
+
+리액트는 규모가 크고 빠른 웹 애플리케이션을 만들기 좋은 기술. 
+이를 위해 리액트가 권장하는 애플리케이션 셜계 방식 살펴볼 것.
+
+리액트에서 컴포넌트 간에 데이터를 전달할 때 Props를 사용하는데, 전달 방향은 언제나 부모로부터 자식.
+리액트의 이러한 데이터 전달 특징 = '단방향 데이터 흐름'
+마치 일방통행 차선. 초보 운전자 입장에서는 운전이 수월하며 교통 상황도 한눈에 확인 가능.
+
+반면, State를 변경하는 이벤트는 자식에서 부모를 향해 역방향으로 전달.
+
+'카운터' 앱의 경우 Controller 컴포넌트에 있는 버튼 요소를 클릭할 때마다 App 컴포넌트의 State를 업데이트하는 이벤트가 발생.
+App 컴포넌트는 자신이 관리하는 State를 변경하는 함수를 Props로 전달해 자식이 부모의 State를 대신 업데이트.
+
+결론적으로 리액트 앱으르 설계할 때는 데이터는 위에서 아래로, 이벤트는 아래에서 위로 향하도록 설계.
