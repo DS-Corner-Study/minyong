@@ -1,0 +1,129 @@
+[UI 구현하기]
+앞서 요구사항 분석, 리액트 앱 생성을 통해 프로젝트 구현 준비를 마침.
+이번에는 기능 구현에 앞서 UI(User Interface)를 구현.
+
+UI: 사용자 인터페이스. 웹 페이지에서 사용자와 상호작용하는 요소. 이 요소들의 사용성을 높이기 위해 기능 추가, 스타일 적용을 하기도 함. 
+
+기능 구현에 앞서 UI를 먼저 구현한다고 함은 이들 요소의 외양(껍데기)을 먼저 만든다고 이해하면 됨.
+
+
+
+1. [Viewer 컴포넌트 만들기]
+
+현재의 카운트를 표시.
+
+src에 component 폴더를 만들고 Viewer.js 생성.
+
+# Viewer 컴포넌트 작성.
+const Viewer = () => {
+  return (
+    <div>
+      <div>현재 카운트: </div>
+      <h1>0</h1>
+    </div>
+  );
+};
+export default Viewer;
+- Viewer 컴포넌트 페이지 구성은 간단. 두 줄에 걸쳐 텍스트 출력하는 것이 전부. 일단 카운트 값은 0으로 고정.
+
+Viewer 컴포넌트를 페이지에 렌더링하기 위해서 App의 자식으로 배치. 
+이때 App 컴포넌트에서 페이지의 제목도 함께 추가.
+
+# App.js 파일 작성.
+import "./App.css";
+import Viewer from "./component/Viewer"; ①
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Simple Counter</h1> ②
+      <section>
+        <Viewer /> ③
+      </section>
+    </div>
+  );
+}
+
+export default App;
+- ① component 폴더에 있는 Viewer 컴포넌트를 불러옴.
+- ② 제목 'Simple Counter'를 <h1> 태그로 감싸 페이지에서 렌더링.
+- ③ Viewer 컴포넌트를 불러와 <section> 태그로 감싸 렌더링. <section>은 영역을 분리하기 위한 태그로 <div>와 동일한 기능을 수행.
+
+
+
+2. [Controller 컴포넌트 만들기]
+
+카운틀르 늘리거나 줄임.
+
+component 폴더에서 Controller.js 만듦.
+# Controller.js 작성.
+const Controller = () => {
+  return (
+    <div>
+      <button>-1</button>
+      <button>-10</button>
+      <button>-100</button>
+      <button>+100</button>
+      <button>+10</button>
+      <button>+1</button>
+    </div>
+  );
+};
+export default Controller;
+- Controller 컴포넌트 역시 단순한 구성. 6개의 버튼을 한 줄로 렌더링.
+
+Controller 컴포넌트를 페이지에 렌더링하려면 Viewer처럼 App의 자식으로 배치.
+
+# App 컴포넌트 수정.
+import "./App.css";
+import Controller from "./component/Controller"; ①
+import Viewer from "./component/Viewer";
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Simple Counter</h1>
+      <section>
+        <Viewer />
+      </section>
+      <section>
+        <Controller /> ②
+      </section>
+    </div>
+  );
+}
+
+export default App;
+- ① component 폴더에 있는 Controller 컴포넌트를 불러옴.
+- ② Controller 컴포넌트를 <section> 태그로 감싸 렌더링.
+
+
+
+
+3. [컴포넌트 스타일링하기]
+
+요구사항에 맞게 적절한 스타일 규칙 적용.
+
+src 폴더 App.css에서 기존 스타일 규칙을 모두 삭제.
+# App.css 수정.
+body {
+  padding: 20px;
+}
+
+.App {
+  margin: 0 auto;
+  width: 500px;
+}
+
+.App > section { ①
+  padding: 20px;
+  background-color: rgb(245, 245, 245);
+  border: 1px solid rgb(240, 240, 240);
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+- ① .App > section은 className=App 요소의 <section> 태그를 가리키는 CSS 문법. 이 스타일 규칙은 App 컴포넌트 최상위 태그 바로 아래의 <section>에만 적용.
+
+
+지금까지 '카운터'앱의 페이지 UI 구현 완료.
+아직 버튼을 눌러도 어떤 동작도 일어나지 x. 카운터 기능을 구현하지 않았기 때문.
